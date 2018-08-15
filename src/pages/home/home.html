@@ -1,18 +1,129 @@
 <ion-header>
-  <ion-navbar>
+  <ion-navbar color="header">
     <button ion-button menuToggle>
-      <ion-icon name="menu"></ion-icon>
+      <ion-icon name="menu">
+      </ion-icon>
     </button>
-    <ion-title>Home</ion-title>
+  <ion-title>
+    <img style="width: 60%; max-width: 200px;" src="assets/image/home_header.png">
+  </ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only light color="shadowlite" (click)="getSearch()">
+        <ion-icon ios="ios-search" md="md-search">
+        </ion-icon>
+      </button>
+      <button ion-button icon-only light class="has-icon icon-only has-badge" (click)="getCart()">
+        <ion-icon class="ion-ios-basket-outline item-icon">
+        </ion-icon>
+        <ion-badge class="badge badge-light" *ngIf="values.count != 0">{{values.count}}
+        </ion-badge>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
+<ion-content class="home">
+    <ion-spinner *ngIf="!service?.banners" name="crescent">
+    </ion-spinner>
+  <div *ngIf="service?.banners" class="home-banners">
+    <ion-slides pager="true" loop="true" autoplay="5800">
+      <ion-slide *ngFor='let value of service.banners'>
+        <img src="{{value}}">
+      </ion-slide>
+    </ion-slides>
+  </div>
+  <div *ngIf="service?.categories">
+    <div class="shop-name">
+      <ion-item no-lines>
+        <b color="side-heading-color" text-uppercase>{{"Shop"| translate}}
+        </b>
+      </ion-item>
+    </div>
+    <div *ngIf="service.mainCategories" class="main-categories">
+      <ion-row class="row unlimited-items">
+        <ion-col class="col" *ngFor="let item of service.mainCategories">
+          <a (click)="getCategory(item.id, item.slug, item.name)">
+            <ion-card>
+              <ion-card-content>
+                <img src="{{item.image}}"/>
+              </ion-card-content>
+              <div text-center>
+                <ion-label text-uppercase><span [innerHTML]="item.name"></span>
+                </ion-label>
+              </div>
+            </ion-card>
+          </a>
+        </ion-col>
+      </ion-row>
+    </div>
+  </div>
 
-<ion-content padding>
-  <h3>Ionic Menu Starter</h3>
+    <div *ngIf="service?.products?.products" class="products-listing">
+      <div *ngIf="service?.products.products.length">
+          <ion-item no-lines class="item-name">
+            <ion-label text-uppercase>{{"Products" | translate}}
+            </ion-label>
+          </ion-item>
+          <ion-list>
+                      <div class="card-background-page grid">
+            <ion-row class="row unlimited-items">
+              <ion-col class="col" *ngFor="let item of service.products.products">
+                <ion-card>
+                  <ion-card-content class="stock">
 
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will show you the way.
-  </p>
+                      <img tappable src="{{item.images[0].src}}" (click)="getProduct(item.id)">
+                      <button ion-button color="danger" *ngIf="!item.in_stock">{{"OUTOFSTOCK" | translate}}
+                      </button>
 
-  <button ion-button secondary menuToggle>Toggle Menu</button>
+     
+                  <ion-icon ios="ios-heart" md="md-heart" color="danger" class="wishlist-button-grid" *ngIf="values.wishlistId[item.id]" (click)="removeFromWishlist(item.id)"></ion-icon>
+                  <ion-icon ios="ios-heart-outline" md="md-heart-outline" color="danger" class="wishlist-button-grid" *ngIf="!values.wishlistId[item.id]" (click)="addToWishlist(item.id)"></ion-icon>
+
+                  
+                  </ion-card-content>
+                  <div tappable (click)="getProduct(item.id)" class="card-name">
+                  <ion-label *ngIf="item.title">{{item.title}}
+                  </ion-label>
+                  <ion-label *ngIf="item.name">{{item.name}}
+                  </ion-label>
+                  </div>
+                  <ion-item no-padding class="price-list">
+                    <h3 class="price-regular" *ngIf="!item.sale_price">{{1*item.price | currency:values.currency:true:'1.2-2'}}
+                    </h3>
+                    <h3 class="price-special" *ngIf="item.sale_price">{{1*item.sale_price | currency:values.currency:true:'1.2-2'}}
+                    </h3>
+                    <h3 class="price-delete" primary *ngIf="item.sale_price">
+                      <del>{{1*item.regular_price | currency:values.currency:true:'1.2-2'}}
+                      </del>
+                    </h3>
+                    <!--button ion-button [disabled]='!item.in_stock' text-uppercase color="button-color" item-right clear *ngIf="values.cart[item.id] == undefined || values.cart[item.id] == 0" (click)="addToCart(item.id, item.type)">
+                      {{"Add"  | translate}}
+                    </button>
+                    <button ion-button icon-only item-right clear color="button-color" *ngIf="values.cart[item.id] >= 1" (click)="deleteFromCart(item.id)">
+                      <ion-icon ios="ios-remove-circle-outline" md="ios-remove-circle-outline">
+                      </ion-icon>
+                    </button>
+                    <button ion-button item-right color="button-color" clear *ngIf="values.cart[item.id] >= 1">{{values.cart[item.id]}}
+                    </button>
+                    <button ion-button icon-only item-right clear color="button-color" *ngIf="values.cart[item.id] >= 1" (click)="updateToCart(item.id)">
+                      <ion-icon ios="ios-add-circle-outline" md="ios-add-circle-outline">
+                      </ion-icon>
+                    </button-->
+                  </ion-item>
+                </ion-card>
+              </ion-col>
+            </ion-row>
+          </div>
+          </ion-list>
+        </div>
+      </div>
+
+
+
+
+
+
+
+          <ion-infinite-scroll (ionInfinite)="doInfinite($event)" *ngIf="has_more_items">
+            <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="{{'Loading More Items' | translate}}"> </ion-infinite-scroll-content>
+        </ion-infinite-scroll>
 </ion-content>

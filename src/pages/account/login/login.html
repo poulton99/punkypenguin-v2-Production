@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-navbar color="header">
+    <button ion-button menuToggle>
+      <ion-icon name="menu">
+      </ion-icon>
+    </button>
+    <ion-title text-center>{{"LogIn"| translate}}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="account-login">
+  <div class="margin">
+    <div>
+      <img src="assets/image/login_logo.png">
+    </div>
+    <form #f="ngForm" class="login">
+      <ion-list>
+        <ion-item>
+          <!--ion-label floating>{{"username" | translate}}</ion-label-->
+          <ion-input required type="email" [(ngModel)]="loginData.username" name="firstname" placeholder="Username">
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <!--ion-label floating>{{"password" | translate}}</ion-label-->
+          <ion-input required type="password" [(ngModel)]="loginData.password" name="password" placeholder="Password">
+          </ion-input>
+        </ion-item>
+      </ion-list>
+      <div class="margin"> 
+        <button ion-button block color="button-color" type="submit" class="button button-block button-default" text-uppercase [disabled]="disableSubmit" (click)="login(loginData)">{{buttonText}}
+        </button>
+        <br>
+        <button ion-button clear color="button-color" type="submit" class="button button-block button-clear" text-uppercase (click)="forgotten(loginData)">{{"ForgotPassword" | translate}} ?
+        </button>
+      </div>
+    </form>
+    <br/>
+  </div>
+</ion-content>

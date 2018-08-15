@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "588119324500",
+    "firebase_url": "https://wooapp-1e234.firebaseio.com",
+    "project_id": "wooapp-1e234",
+    "storage_bucket": "wooapp-1e234.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:588119324500:android:d78048c807363480",
+        "android_client_info": {
+          "package_name": "com.punkypenguin.wooapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "588119324500-jua08o44mbtlrrvlvtki0i175jkviq65.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAtk3eTLCPe8IY5Qj6p4M0oXe6seHZLdc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

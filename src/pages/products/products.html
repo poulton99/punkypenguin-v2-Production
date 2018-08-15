@@ -1,0 +1,245 @@
+<ion-header>
+  <ion-navbar color="header">
+    <button ion-button menuToggle>
+      <ion-icon name="menu">
+      </ion-icon>
+    </button>
+    <ion-title text-center *ngIf="categoryName"><span [innerHTML]="categoryName"></span>
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only light class="has-icon icon-only has-badge" (click)="getFilter()">
+        <ion-icon ios="ios-funnel" md="md-funnel">
+        </ion-icon>
+      </button>
+      <button ion-button icon-only light class="has-icon icon-only has-badge" (click)="getCart()">
+        <ion-icon class="ion-ios-basket-outline item-icon">
+        </ion-icon>
+        <ion-badge class="badge badge-light"  *ngIf="values.count">{{values.count}}
+        </ion-badge>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content class="products">
+  <div *ngIf="showFilters" class="filter">
+    <ion-list radio-group [(ngModel)]="sort" (ngModelChange)="chnageFilter(sort)">
+      <ion-list-header>
+        <b>
+          {{"Sort" | translate}}
+        </b>
+      </ion-list-header>
+      <ion-item>
+        <ion-label text-wrap>{{"Default" | translate}}
+        </ion-label>
+        <ion-radio value="0">
+        </ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap>{{"Name" | translate}} (A - Z)
+        </ion-label>
+        <ion-radio value="1">
+        </ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap>{{"Name" | translate}} (Z - A)
+        </ion-label>
+        <ion-radio value="2">
+        </ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap>{{"Price" | translate}} (Low - High)
+        </ion-label>
+        <ion-radio value="3">
+        </ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap>{{"Price" | translate}} (High - Low)
+        </ion-label>
+        <ion-radio value="4">
+        </ion-radio>
+      </ion-item>
+    </ion-list>
+    <button ion-button block color="button-color" (click)="cancel()">
+      {{"CANCEL" | translate}}
+    </button> 
+  </div>
+
+
+  <div *ngIf="!showFilters">
+    <ion-searchbar
+                   [(ngModel)]="q"
+                   [showCancelButton]="shouldShowCancel"
+                   (ionInput)="onInput($event)"
+                   (ionCancel)="onCancel($event)">
+    </ion-searchbar>
+    <div *ngIf="!this.filter['filter[q]'] || this.filter['filter[q]'] == ''">
+    <div *ngIf="subCategories" class="category">
+      <ion-item *ngIf="subCategories.length" no-lines class="category-name"> 
+        <ion-label text-uppercase>{{"Categories" | translate}}
+        </ion-label>
+      </ion-item>
+      <div class="sub-category">
+        <ion-item *ngFor="let item of subCategories">
+          <ion-thumbnail item-left>
+            <a (click)="getCategory(item.id, item.slug)">
+              <img src="{{item.image}}"/>
+            </a>
+          </ion-thumbnail>
+          <a (click)="getCategory(item.id, item.slug)">
+            <h2>
+              <span [innerHTML]="item.name"></span>
+            </h2>
+          </a>
+          <ion-icon item-right ios="ios-arrow-forward" md="md-arrow-forward" (click)="getCategory(item.id, item.slug, item.name)">
+          </ion-icon>
+        </ion-item>
+      </div>
+    </div>
+    </div>
+    
+    <ion-spinner *ngIf="!products?.products" name="crescent">
+    </ion-spinner>
+    <div *ngIf="products">
+      <h2 *ngIf="!products.products.length" style="font-size: 15px;text-align: center;margin-top: 30px">No products found!.</h2>
+    </div>
+    <div *ngIf="products?.products" class="products-listing">
+      <div *ngIf="products.products.length">
+        <div *ngIf="values.listview">
+          <ion-item no-lines class="item-name">
+            <ion-label text-uppercase>{{"Products" | translate}}
+            </ion-label>
+            <button ion-button icon-only item-right clear color="button-color" (click)="setGridView()">
+              <ion-icon ios="ios-grid" md="md-grid">
+              </ion-icon>
+            </button>
+          </ion-item>
+          <ion-list>
+            <div class="item-list" *ngFor="let item of products.products">
+              <ion-item class="left-padding" no-lines>
+                  <ion-thumbnail item-left class="stock-list">
+                    <img tappable (click)="getProduct(item.id)" src="{{item.images[0].src}}">
+                    <button class="out-of-stock-button" ion-button color="danger" *ngIf="!item.in_stock">{{"OUTOFSTOCK" | translate}}
+                    </button>             
+                  </ion-thumbnail> 
+
+                <!--div tappable (click)="getProduct(item.id)"-->
+                  <div class="product-name-top">                  
+                  <ion-row>                 
+                  <ion-col width-80 class="product-label">
+                   <div tappable (click)="getProduct(item.id)">
+                  <h2 *ngIf="item.title">{{item.title}}
+                    </h2>
+                    <h2 *ngIf="item.name">{{item.name}}
+                    </h2>
+                    </div>
+                  </ion-col>
+                  <ion-col width-20 class="wishlist-label">
+                  <ion-icon ios="ios-heart" md="md-heart" color="danger" class="wishlist-button" *ngIf="values.wishlistId[item.id]" (click)="removeFromWishlist(item.id)"></ion-icon>
+                  <ion-icon ios="ios-heart-outline" md="md-heart-outline" color="danger" class="wishlist-button" *ngIf="!values.wishlistId[item.id]" (click)="addToWishlist(item.id)"></ion-icon>
+                  </ion-col>
+                  </ion-row>
+                    <p tappable (click)="getProduct(item.id)" class="max-lines" [innerHTML]="item.description">
+                    </p>
+                  </div>
+
+
+                  <div class="price-bottom-list">
+                    <h3 class="price-regular" *ngIf="!item.sale_price">{{1*item.price | currency:values.currency:true:'1.2-2'}}
+                    </h3>
+                    <h3 class="price-special" *ngIf="item.sale_price">{{1*item.sale_price | currency:values.currency:true:'1.2-2'}}
+                    </h3>
+                    <h3 class="price-del" *ngIf="item.sale_price">
+                      <del>{{1*item.regular_price | currency:values.currency:true:'1.2-2'}}
+                      </del>
+                    </h3>
+                  </div>
+                <!--/div-->
+
+                <div class="bottom-right-button">
+                  <button ion-button [disabled]='!item.in_stock' text-uppercase color="button-color"  item-right outline *ngIf="values.cart[item.id] == undefined || values.cart[item.id] == 0" (click)="addToCart(item.id, item.type)">
+                    {{"Add"  | translate}}
+                  </button>
+                  <button ion-button icon-only item-right clear color="button-color" *ngIf="values.cart[item.id] >= 1" (click)="deleteFromCart(item.id)">
+                    <ion-icon ios="ios-remove-circle-outline" md="ios-remove-circle-outline">
+                    </ion-icon>
+                  </button>
+                  <button ion-button item-right color="button-color" clear *ngIf="values.cart[item.id] >= 1">{{values.cart[item.id]}}
+                  </button>
+                  <button ion-button icon-only item-right clear color="button-color" *ngIf="values.cart[item.id] >= 1" (click)="updateToCart(item.id)">
+                    <ion-icon ios="ios-add-circle-outline" md="ios-add-circle-outline">
+                    </ion-icon>
+                  </button>
+                </div>
+              </ion-item>
+            </div>
+          </ion-list>
+        </div>
+        <div *ngIf="!values.listview">
+          <ion-item no-lines class="item-name">
+            <ion-label text-uppercase>{{"Products" | translate}}
+            </ion-label>
+            <button ion-button icon-only item-right clear color="button-color" (click)="setListView()">
+              <ion-icon ios="ios-list-box" md="ios-list-box">
+              </ion-icon>
+            </button>
+          </ion-item>
+          <div class="card-background-page grid">
+            <ion-row class="row unlimited-items">
+              <ion-col class="col" *ngFor="let item of products.products">
+                <ion-card>
+                  <ion-card-content class="stock">
+
+                      <img tappable src="{{item.images[0].src}}" (click)="getProduct(item.id)">
+                      <button ion-button color="danger" *ngIf="!item.in_stock">{{"OUTOFSTOCK" | translate}}
+                      </button>
+
+     
+                  <ion-icon ios="ios-heart" md="md-heart" color="danger" class="wishlist-button-grid" *ngIf="values.wishlistId[item.id]" (click)="removeFromWishlist(item.id)"></ion-icon>
+                  <ion-icon ios="ios-heart-outline" md="md-heart-outline" color="danger" class="wishlist-button-grid" *ngIf="!values.wishlistId[item.id]" (click)="addToWishlist(item.id)"></ion-icon>
+
+                  
+                  </ion-card-content>
+                  <div tappable (click)="getProduct(item.id)" class="card-name">
+                  <ion-label *ngIf="item.title">{{item.title}}
+                  </ion-label>
+                  <ion-label *ngIf="item.name">{{item.name}}
+                  </ion-label>
+                  </div>
+                  <ion-item no-padding class="price-list">
+                    <h3 class="price-regular" *ngIf="!item.sale_price">{{1*item.price | currency:values.currency:true:'1.2-2'}}
+                    </h3>
+                    <h3 class="price-special" *ngIf="item.sale_price">{{1*item.sale_price | currency:values.currency:true:'1.2-2'}}
+                    </h3>
+                    <h3 class="price-delete" primary *ngIf="item.sale_price">
+                      <del>{{1*item.regular_price | currency:values.currency:true:'1.2-2'}}
+                      </del>
+                    </h3>
+                    <button ion-button [disabled]='!item.in_stock' text-uppercase color="button-color" item-right clear *ngIf="values.cart[item.id] == undefined || values.cart[item.id] == 0" (click)="addToCart(item.id, item.type)">
+                      {{"Add"  | translate}}
+                    </button>
+                    <button ion-button icon-only item-right clear color="button-color" *ngIf="values.cart[item.id] >= 1" (click)="deleteFromCart(item.id)">
+                      <ion-icon ios="ios-remove-circle-outline" md="ios-remove-circle-outline">
+                      </ion-icon>
+                    </button>
+                    <button ion-button item-right color="button-color" clear *ngIf="values.cart[item.id] >= 1">{{values.cart[item.id]}}
+                    </button>
+                    <button ion-button icon-only item-right clear color="button-color" *ngIf="values.cart[item.id] >= 1" (click)="updateToCart(item.id)">
+                      <ion-icon ios="ios-add-circle-outline" md="ios-add-circle-outline">
+                      </ion-icon>
+                    </button>
+                  </ion-item>
+                </ion-card>
+              </ion-col>
+            </ion-row>
+          </div>
+        </div>
+      </div>
+      <ion-infinite-scroll (ionInfinite)="doInfinite($event)" *ngIf="has_more_items">
+        <ion-infinite-scroll-content
+         loadingSpinner="crescent"
+         loadingText="{{'Loading more items..' | translate}}">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </div>
+  </div>
+</ion-content>
